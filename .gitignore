@@ -32,3 +32,9 @@ CLAUDE.md
 
 # Logs
 *.log
+
+# Temporary and test folders
+tmp/
+**/tmp/
+tests/
+**/tests/
