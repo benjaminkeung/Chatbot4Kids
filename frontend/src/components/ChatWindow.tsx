@@ -12,6 +12,7 @@ interface Message {
   role: 'user' | 'assistant'
   text: string
   images?: ImageParagraph[]
+  isError?: boolean
 }
 
 interface Props {
@@ -40,16 +41,29 @@ export default function ChatWindow({ sessionId, onSessionCreated }: Props) {
     setMessages((prev) => [...prev, { role: 'user', text: prompt }])
     setLoading(true)
 
-    sendChat(prompt, sessionId, (label) => setStep(label), (result) => {
-      const text = result.images.map((p) => p.text).join('\n\n')
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', text, images: result.images },
-      ])
-      setLoading(false)
-      setStep('')
-      if (!sessionId) onSessionCreated(result.session_id)
-    })
+    sendChat(
+      prompt,
+      sessionId,
+      (label) => setStep(label),
+      (result) => {
+        const text = result.images.map((p) => p.text).join('\n\n')
+        setMessages((prev) => [
+          ...prev,
+          { role: 'assistant', text, images: result.images },
+        ])
+        setLoading(false)
+        setStep('')
+        if (!sessionId) onSessionCreated(result.session_id)
+      },
+      (errorMessage) => {
+        setMessages((prev) => [
+          ...prev,
+          { role: 'assistant', text: errorMessage, isError: true },
+        ])
+        setLoading(false)
+        setStep('')
+      }
+    )
   }
 
   return (
@@ -58,9 +72,18 @@ export default function ChatWindow({ sessionId, onSessionCreated }: Props) {
         {messages.length === 0 && (
           <p className="text-center text-gray-400 mt-20 text-lg">Ask me anything!</p>
         )}
-        {messages.map((m, i) => (
-          <MessageBubble key={i} role={m.role} text={m.text} images={m.images} />
-        ))}
+        {messages.map((m, i) =>
+          m.isError ? (
+            <div key={i} className="flex justify-start mb-3">
+              <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-2xl px-4 py-3 text-sm max-w-sm flex items-start gap-2">
+                <span className="text-lg leading-none">⚠️</span>
+                <span>{m.text}</span>
+              </div>
+            </div>
+          ) : (
+            <MessageBubble key={i} role={m.role} text={m.text} images={m.images} />
+          )
+        )}
         {loading && (
           <div className="flex justify-start mb-3">
             <div className="bg-white border border-gray-100 rounded-2xl px-4 py-3 text-gray-400 italic text-sm">

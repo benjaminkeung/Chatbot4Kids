@@ -27,6 +27,18 @@ async def get_sessions() -> list[dict]:
         return [{"id": s.id, "title": s.title, "created_at": str(s.created_at)} for s in sessions]
 
 
+async def delete_session(session_id: str) -> bool:
+    from sqlalchemy import delete as sql_delete
+    async with AsyncSessionLocal() as db:
+        session = await db.get(Session, session_id)
+        if not session:
+            return False
+        await db.execute(sql_delete(Message).where(Message.session_id == session_id))
+        await db.delete(session)
+        await db.commit()
+        return True
+
+
 async def get_messages(session_id: str) -> list[dict]:
     async with AsyncSessionLocal() as db:
         result = await db.execute(
