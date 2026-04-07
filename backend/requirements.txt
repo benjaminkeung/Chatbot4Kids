@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+langgraph
+langchain-core
+langchain-google-genai
+google-genai
+sqlalchemy
+greenlet
+aiosqlite
+python-dotenv
+httpx
+pydantic

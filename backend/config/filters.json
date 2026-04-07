@@ -1,0 +1,8 @@
+{
+  "reading_level": "grade 11",
+  "remove_follow_up_questions": true,
+  "blocked_categories": ["violence", "sexual_content", "horror", "drugs", "gambling"],
+  "custom_rules": [
+    "Structure the response as numbered paragraphs (1. ... 2. ... 3. ...). Each paragraph covers one main idea. There is no limit on the number of paragraphs."
+  ]
+}
